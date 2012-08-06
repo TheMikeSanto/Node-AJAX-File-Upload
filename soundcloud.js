@@ -1,7 +1,8 @@
 var http 				= require('http'),
 		formidable 	= require('formidable'),
 		fs 					= require('fs'), 
-		sys 				= require('sys');
+		sys 				= require('sys'),
+		io 					= require('socket.io');
 
 var server = http.createServer(function (req, res) {
 	switch(req.url) {
@@ -9,22 +10,23 @@ var server = http.createServer(function (req, res) {
 	       // show the user a simple form
 	    console.log("[200] " + req.method + " to " + req.url);
 	    res.writeHead(200, "OK", {'Content-Type': 'text/html'});
-	    res.write('<html><head><title>Hello Noder!</title></head><body>');
-	    res.write('<h1>Welcome Noder, who are you?</h1>');
-	    res.write('<form enctype="multipart/form-data" action="/upload" method="post">');
-	    res.write('Name: <input type="text" name="username" value="John Doe" /><br />');
-	    res.write('Age: <input type="text" name="userage" value="99" /><br />');
-	    res.write('File :<input type="file" name="upload" multiple="multiple"><br>');
-	    res.write('<input type="submit" />');
-	    res.write('</form></body></html');
+	    fs.readFile('./index.html', function(err, html) {
+	    	res.write(html);
+	    }
 	    res.end();
       break;
     case '/upload':
-    	console.log(req.method.toLowerCase());
 			if (req.method.toLowerCase() === 'post') {
 				var form = new formidable.IncomingForm();
-				form.addListener('progress', function(bytesReceived, bytesExpected) {
-					console.log(bytesRecevied + " out of " + bytesExpected);
+				var socket = io.connect('http://localhost:8000');
+				form.on('progress', function(bytesReceived, bytesExpected) {
+					var progress = {
+						type: 'progress',
+						bytesRecevied: bytesReceived,
+						bytesExpected: bytesExpected
+					};
+
+					socket.broadcast(JSON.stringify(progress));
 				});
 			} else {
 				res.writeHead(405, "Method not supported", {'Content-type': 'text/html'});
@@ -37,4 +39,9 @@ var server = http.createServer(function (req, res) {
 	}
 });
 
+var io = io.listen(server);
 server.listen(8000);
+
+io.sockets.on('connection', function(socket) {
+	socket.emit('news', {hello: 'world'});
+});
