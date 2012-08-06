@@ -7,18 +7,15 @@ var http 				= require('http'),
 var server = http.createServer(function (req, res) {
 	switch(req.url) {
 		case '/':
-	       // show the user a simple form
 	    console.log("[200] " + req.method + " to " + req.url);
 	    res.writeHead(200, "OK", {'Content-Type': 'text/html'});
 	    fs.readFile('./index.html', function(err, html) {
-	    	res.write(html);
-	    }
-	    res.end();
+	    	res.end(html);
+	    });
       break;
     case '/upload':
 			if (req.method.toLowerCase() === 'post') {
 				var form = new formidable.IncomingForm();
-				var socket = io.connect('http://localhost:8000');
 				form.on('progress', function(bytesReceived, bytesExpected) {
 					var progress = {
 						type: 'progress',
@@ -26,8 +23,15 @@ var server = http.createServer(function (req, res) {
 						bytesExpected: bytesExpected
 					};
 
-					socket.broadcast(JSON.stringify(progress));
+					io.sockets.on('connection', function(socket) {
+						socket.emit('progress', JSON.stringify(progress));
+					});
 				});
+
+				form.parse(req, function(err, fields, files) {
+      		res.writeHead(200, {'content-type': 'text/plain'});
+      		res.end();
+    		});
 			} else {
 				res.writeHead(405, "Method not supported", {'Content-type': 'text/html'});
 				res.end();
@@ -41,7 +45,3 @@ var server = http.createServer(function (req, res) {
 
 var io = io.listen(server);
 server.listen(8000);
-
-io.sockets.on('connection', function(socket) {
-	socket.emit('news', {hello: 'world'});
-});
