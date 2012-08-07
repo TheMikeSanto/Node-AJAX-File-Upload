@@ -2,7 +2,8 @@ var http 				= require('http'),
 		formidable 	= require('formidable'),
 		fs 					= require('fs'), 
 		sys 				= require('sys'),
-		io 					= require('socket.io');
+		io 					= require('socket.io'),
+		clients 		= {};
 
 var server = http.createServer(function (req, res) {
 	switch(req.url) {
@@ -17,20 +18,13 @@ var server = http.createServer(function (req, res) {
 			if (req.method.toLowerCase() === 'post') {
 				var form = new formidable.IncomingForm();
 				form.on('progress', function(bytesReceived, bytesExpected) {
-					var progress = {
-						type: 'progress',
-						bytesRecevied: bytesReceived,
-						bytesExpected: bytesExpected
-					};
+       		progress = (bytesReceived / bytesExpected * 100).toFixed(2);
+       		mb = (bytesExpected / 1024 / 1024).toFixed(1);
 
-					io.sockets.on('connection', function(socket) {
-						socket.emit('progress', JSON.stringify(progress));
-					});
+					socket.emit('progress', progress);
 				});
 
 				form.parse(req, function(err, fields, files) {
-      		res.writeHead(200, {'content-type': 'text/plain'});
-      		res.end();
     		});
 			} else {
 				res.writeHead(405, "Method not supported", {'Content-type': 'text/html'});
@@ -43,5 +37,10 @@ var server = http.createServer(function (req, res) {
 	}
 });
 
-var io = io.listen(server);
+var socket = io.listen(server);
 server.listen(8000);
+
+socket.sockets.on("connection", function(socket) {
+	clients[socket.id] = socket;
+	socket.emit("connect", {message: "you've been connected"});
+})
