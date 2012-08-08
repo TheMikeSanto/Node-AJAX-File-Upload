@@ -1,13 +1,18 @@
 <html>
 	<head>
-		<title>SuperUpload</title>
+		<title>&#220;pload</title>
 	</head>
 	<body>
-		<h1>SuperUpload</h1>
+		<h1>&#220;pload</h1>
 		<form enctype="multipart/form-data" action="/upload" method="post">
-			Name: <input type="text" name="username" value="John Doe" /><br />
-			Age: <input type="text" name="userage" value="99" /><br />
-			File :<input type="file" name="upload" multiple="multiple"><br>
+			<input type="file" name="upload" multiple="multiple"><br>
+			<div style="height: 15px; width:100%;">
+				<span id="status" style="display: none;">
+					<strong>Status:</strong>
+					<span id="percentage"></span>
+				</span>
+			</div>
+			<textarea name="description" rows="4"></textarea><br />
 			<input type="submit" />
 		</form>
 
@@ -17,15 +22,18 @@
 			<script src="http://malsup.github.com/jquery.form.js"></script> 
 			<script type="text/javascript">
 				$(document).ready(function() {
-					$("form").ajaxForm(function() {
-						alert("Yo");
-					});
+					$("form").ajaxForm();
+				})
+
+				$("input:file").change(function() {
+					$("form").submit();
 				})
 
 				$("form").submit(function() {
 					var progress_socket = io.connect('http://localhost:8000/upload');
 					progress_socket.on('progress', function(data) {
-						console.log(data);
+						$("#status").show();
+						$("#percentage").text(data);
 					});
 				})
 			</script>
