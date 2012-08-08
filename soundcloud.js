@@ -16,15 +16,20 @@ var server = http.createServer(function (req, res) {
       break;
     case '/upload':
 			if (req.method.toLowerCase() === 'post') {
+				console.log("posted");
 				var form = new formidable.IncomingForm();
 				form.on('progress', function(bytesReceived, bytesExpected) {
        		progress = (bytesReceived / bytesExpected * 100).toFixed(2);
        		mb = (bytesExpected / 1024 / 1024).toFixed(1);
 
-					socket.emit('progress', progress);
+					socket.of('/upload').emit('progress', progress);
 				});
 
 				form.parse(req, function(err, fields, files) {
+					console.log(err);
+					console.log(fields);
+					console.log(files);
+					console.log("sup");
     		});
 			} else {
 				res.writeHead(405, "Method not supported", {'Content-type': 'text/html'});
