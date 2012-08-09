@@ -2,6 +2,7 @@ var http 				= require('http'),
 		formidable 	= require('formidable'),
 		fs 					= require('fs'), 
 		io 					= require('socket.io'),
+		mime				= require('mime'),
 		clients 		= {};
 
 var server = http.createServer(function (req, res) {
