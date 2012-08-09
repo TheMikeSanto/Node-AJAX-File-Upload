@@ -29,12 +29,20 @@
 					$("form").submit();
 				})
 
-				$("form").submit(function() {
+				$("form").on("submit", function(e) {
+					e.preventDefault();
 					var progress_socket = io.connect('http://localhost:8000/upload');
+
+					progress_socket.on("connect", function() {
+						console.log("connected to server");
+					});
+
 					progress_socket.on('progress', function(data) {
 						$("#status").show();
-						$("#percentage").text(data);
+						$("#percentage").text(data + "%");
 					});
+
+					$(this).ajaxSubmit();
 				})
 			</script>
 		</footer>

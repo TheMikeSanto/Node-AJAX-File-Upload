@@ -16,20 +16,19 @@ var server = http.createServer(function (req, res) {
       break;
     case '/upload':
 			if (req.method.toLowerCase() === 'post') {
-				console.log("posted");
+				console.log("post");
 				var form = new formidable.IncomingForm();
-				form.on('progress', function(bytesReceived, bytesExpected) {
-       		progress = (bytesReceived / bytesExpected * 100).toFixed(2);
-       		mb = (bytesExpected / 1024 / 1024).toFixed(1);
 
-					socket.of('/upload').emit('progress', progress);
+				socket.of('/upload').on('connection', function(client) {
+					form.on('progress', function(bytesReceived, bytesExpected) {
+       			progress = (bytesReceived / bytesExpected * 100).toFixed(0);
+
+						socket.of('/upload').socket(client.id).emit('progress', progress);
+					});
 				});
 
 				form.parse(req, function(err, fields, files) {
-					console.log(err);
-					console.log(fields);
-					console.log(files);
-					console.log("sup");
+					console.log("form parsed");
     		});
 			} else {
 				res.writeHead(405, "Method not supported", {'Content-type': 'text/html'});
@@ -37,8 +36,8 @@ var server = http.createServer(function (req, res) {
 			}
 			break;
 		default:
-		res.writeHead(404, 'Not found', {'Content-type': 'text/html'});
-		res.end();
+			res.writeHead(404, 'Not found', {'Content-type': 'text/html'});
+			res.end();
 	}
 });
 
@@ -49,3 +48,7 @@ socket.sockets.on("connection", function(socket) {
 	clients[socket.id] = socket;
 	socket.emit("connect", {message: "you've been connected"});
 })
+
+socket.sockets.on("disconnect", function(socket) {
+	console.log(socket.id + " disconnected.");
+});
