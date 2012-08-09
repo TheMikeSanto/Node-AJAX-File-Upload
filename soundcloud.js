@@ -1,7 +1,6 @@
 var http 				= require('http'),
 		formidable 	= require('formidable'),
 		fs 					= require('fs'), 
-		sys 				= require('sys'),
 		io 					= require('socket.io'),
 		clients 		= {};
 
@@ -33,7 +32,6 @@ var server = http.createServer(function (req, res) {
 						if (err) throw err;
 						console.log(files.upload.name + " has been saved");
 					})
-					console.log("form parsed");
     		});
 			} else {
 				res.writeHead(405, "Method not supported", {'Content-type': 'text/html'});
