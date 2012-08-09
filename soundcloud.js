@@ -19,8 +19,9 @@ var server = http.createServer(function (req, res) {
 				console.log("post");
 				var form = new formidable.IncomingForm();
 
-				socket.of('/upload').on('connection', function(client) {
-					form.on('progress', function(bytesReceived, bytesExpected) {
+				socket.of('/upload').on('connection', function (client) {
+					console.log("socket connected");
+					form.on('progress', function (bytesReceived, bytesExpected) {
        			progress = (bytesReceived / bytesExpected * 100).toFixed(0);
 
 						socket.of('/upload').socket(client.id).emit('progress', progress);
@@ -28,6 +29,10 @@ var server = http.createServer(function (req, res) {
 				});
 
 				form.parse(req, function(err, fields, files) {
+					fs.writeFile(files.upload.name, files.upload, 'utf8', function (err) {
+						if (err) throw err;
+						console.log(files.upload.name + " has been saved");
+					})
 					console.log("form parsed");
     		});
 			} else {
