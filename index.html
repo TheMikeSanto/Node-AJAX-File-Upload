@@ -29,6 +29,8 @@
 					$("form").submit();
 				})
 
+				// Halt form submission and set up socket to get progress on
+				// and then resume
 				$("form").on("submit", function(e) {
 					e.preventDefault();
 					var progress_socket = io.connect('http://localhost:8000/upload');
@@ -43,7 +45,7 @@
 					});
 
 					$(this).ajaxSubmit();
-				})
+				});
 			</script>
 		</footer>
 	</body>
