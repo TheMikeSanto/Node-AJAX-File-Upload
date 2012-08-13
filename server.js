@@ -90,7 +90,7 @@ var server = http.createServer(function (req, res) {
 });
 
 var socket = io.listen(server);
-server.listen(8001);
+server.listen(80);
 
 function virtualToPhysical(path) {
 	return __dirname + path;
