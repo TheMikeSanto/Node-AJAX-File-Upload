@@ -82,6 +82,10 @@ var server = http.createServer(function (req, res) {
 	if (req.url == "/check.png") {
 		serveFile(res, "./assets/img/check.png", "image/png");
 	}
+
+	if (req.url == "/jquery.form.js") {
+		serveFile(res, "./assets/js/jquery.form.js", "text/javascript");
+	}
 });
 
 var socket = io.listen(server);
