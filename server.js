@@ -1,16 +1,16 @@
-var http 				= require('http'),
-		formidable 	= require('formidable'),
+var http				= require('http'),
+		formidable	= require('formidable'),
 		fs 					= require('fs'), 
 		io 					= require('socket.io'),
-		mime				= require('mime'),
+		mime 				= require('mime'),
 		forms 			= {};
 
 var server = http.createServer(function (req, res) {
 	// Serve up the main page containing the form
 	if (req.url === "/") {
 		serveFile(res, "./index.html", 'text/html');
-    res.writeHead(200, "OK", {'Content-Type': 'text/html'});
-  }
+		res.writeHead(200, "OK", {'Content-Type': 'text/html'});
+	}
 
 	// Handle file upload POSTs
 	if (req.url.split("?")[0] === "/upload") {
@@ -25,7 +25,7 @@ var server = http.createServer(function (req, res) {
 			// over the socket
 			form.addListener('progress', (function (socket_id) {
 				return function (bytesReceived, bytesExpected) {
-   				progress = (bytesReceived / bytesExpected * 100).toFixed(0);
+					progress = (bytesReceived / bytesExpected * 100).toFixed(0);
 					socket.sockets.socket(socket_id).send(progress);
 				};
 			})(socket_id));
@@ -34,7 +34,7 @@ var server = http.createServer(function (req, res) {
 			form.parse(req, function (err, fields, files) {
 				file_name = escape(files.upload.name);
 
-				fs.rename(files.upload.path, virtualToPhysical("/uploads/" + file_name), function (err) {
+			fs.rename(files.upload.path, virtualToPhysical("/uploads/" + file_name), function (err) {
 					if (err) {
 						throw err;
 					} else {
@@ -59,7 +59,7 @@ var server = http.createServer(function (req, res) {
 		}
 	}
 
-  // Serve up the requested file to the user after upload
+	// Serve up the requested file to the user after upload
 	if (req.url.split("/")[1] == "uploads") {
 		console.log("requesting file " + virtualToPhysical(req.url));
 		serveFile(res, virtualToPhysical(req.url), mime.lookup(req.url));
