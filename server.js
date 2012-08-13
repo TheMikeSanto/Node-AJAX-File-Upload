@@ -1,9 +1,9 @@
 var http				= require('http'),
 		formidable	= require('formidable'),
-		fs 					= require('fs'), 
-		io 					= require('socket.io'),
-		mime 				= require('mime'),
-		forms 			= {};
+		fs					= require('fs'), 
+		io					= require('socket.io'),
+		mime				= require('mime'),
+		forms			= {};
 
 var server = http.createServer(function (req, res) {
 	// Serve up the main page containing the form
@@ -17,9 +17,9 @@ var server = http.createServer(function (req, res) {
 		if (req.method.toLowerCase() === 'post') {
 			// Get the socket id out of the posted url
 			// and create a new form object for it
-			socket_id 				= req.url.split("sid=")[1];
-			forms[socket_id] 	= new formidable.IncomingForm();
-			form 							= forms[socket_id];
+			socket_id					= req.url.split("sid=")[1];
+			forms[socket_id]	= new formidable.IncomingForm();
+			form							= forms[socket_id];
 
 			// When form progress event fires, send the current progress
 			// over the socket
