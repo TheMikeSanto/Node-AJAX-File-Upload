@@ -2,57 +2,51 @@ var http 				= require('http'),
 		formidable 	= require('formidable'),
 		fs 					= require('fs'), 
 		io 					= require('socket.io'),
-		mime				= require('mime');
+		mime				= require('mime'),
+		forms 			= {},
+		current_client = "";
 
 var server = http.createServer(function (req, res) {
+	if (req.url == "/") {
+    console.log("[200] " + req.method + " to " + req.url);
+    res.writeHead(200, "OK", {'Content-Type': 'text/html'});
+    fs.readFile('./index.html', function(err, html) {
+    	res.end(html);
+    });
+  }
+
 	if (req.url.split("/")[1] == "uploads") {
-		fs.readFile(virtualToPhysical(req.url), function (err, data) {
-			if (err) throw err;
-			res.writeHead(200, "OK", {'Content-Type': mime.lookup(req.url) });
-			console.log(data);
-			res.end(data, 'binary');
-		})
-	} else {
-	switch(req.url) {
-		case '/':
-	    console.log("[200] " + req.method + " to " + req.url);
-	    res.writeHead(200, "OK", {'Content-Type': 'text/html'});
-	    fs.readFile('./index.html', function(err, html) {
-	    	res.end(html);
-	    });
-      break;
-    case '/upload':
-			if (req.method.toLowerCase() === 'post') {
-				console.log("post");
-				var form = new formidable.IncomingForm();
-
-				socket.of('/upload').on('connection', function (client) {
-					console.log("socket connected");
-					form.on('progress', function (bytesReceived, bytesExpected) {
-       			progress = (bytesReceived / bytesExpected * 100).toFixed(0);
-
-						socket.of('/upload').socket(client.id).emit('progress', progress);
-					});
-				});
-
-				form.parse(req, function (err, fields, files) {
-					file_name = escape(files.upload.name);
-
-					fs.writeFile(virtualToPhysical(file_name), files.upload, 'utf8', function (err) {
-						if (err) throw err;
-						console.log(file_name);
-					})
-    		});
-			} else {
-				res.writeHead(405, "Method not supported", {'Content-type': 'text/html'});
-				res.end();
-			}
-			break;
-		default:
-			res.writeHead(404, 'Not found', {'Content-type': 'text/html'});
-			res.end();
+		console.log("requesting file " + virtualToPhysical(req.url));
+		var file = fs.readFile(virtualToPhysical(req.url));
+		
+		res.writeHead(200, { 'Content-Type': mime.lookup(req.url) });
+		res.end(file, 'binary');
 	}
-}
+
+	if (req.url.split("?")[0] == "/upload") {
+		console.log("hit upload");
+		if (req.method.toLowerCase() === 'post') {
+			socket_id = req.url.split("sid=")[1];
+			forms[socket_id] = new formidable.IncomingForm();
+			form = forms[socket_id];
+
+			form.addListener('progress', (function(socket_id) {
+				return function (bytesReceived, bytesExpected) {
+   				progress = (bytesReceived / bytesExpected * 100).toFixed(0);
+					socket.sockets.socket(socket_id).send(progress);
+				};
+			})(socket_id));
+
+			form.parse(req, function (err, fields, files) {
+				file_name = escape(files.upload.name);
+
+				fs.writeFile(virtualToPhysical("/uploads/" + file_name), files.upload, 'utf8', function (err) {
+					if (err) throw err;
+					console.log(file_name);
+				})
+			});
+		}
+	}
 });
 
 var socket = io.listen(server);

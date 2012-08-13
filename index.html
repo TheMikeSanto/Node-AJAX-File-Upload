@@ -23,28 +23,21 @@
 			<script type="text/javascript">
 				$(document).ready(function() {
 					$("form").ajaxForm();
-				})
-
-				$("input:file").change(function() {
-					$("form").submit();
-				})
-
-				// Halt form submission and set up socket to get progress on
-				// and then resume
-				$("form").on("submit", function(e) {
-					e.preventDefault();
-					var progress_socket = io.connect('http://localhost:8000/upload');
+					var progress_socket = io.connect('http://localhost:8000');
 
 					progress_socket.on("connect", function() {
 						console.log("connected to server");
+						$("form").attr("action", "/upload?sid=" + progress_socket.socket.sessionid);
 					});
 
-					progress_socket.on('progress', function(data) {
+					progress_socket.on('message', function(data) {
 						$("#status").show();
 						$("#percentage").text(data + "%");
 					});
 
-					$(this).ajaxSubmit();
+					$("input:file").change(function() {
+						$("form").submit();
+					});
 				});
 			</script>
 		</footer>
