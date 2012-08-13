@@ -4,7 +4,7 @@
 	</head>
 	<body>
 		<h1>&#220;pload</h1>
-		<form enctype="multipart/form-data" action="/upload" method="post">
+		<form enctype="multipart/form-data" action="/upload" method="post" id="file_form">
 			<input type="file" name="upload" multiple="multiple"><br>
 			<div style="height: 15px; width:100%;" id="upload_stats">
 				<span id="status" style="display: none;">
@@ -13,8 +13,11 @@
 				</span>
 				<a id="file_link"></a>
 			</div>
+		</form>
+
+		<form id="description_form" action="/description" method="post">
 			<textarea name="description" rows="4"></textarea><br />
-			<input type="submit" value="Save" />
+			<input type="submit" value="Save" /><img src="/check.png" style="display: none;" class="success"/>
 		</form>
 
 		<footer>

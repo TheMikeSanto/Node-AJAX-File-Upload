@@ -1,14 +1,17 @@
 $(document).ready(function() {
 	// Set up jquery.form on our form
-	var formOptions =
+	var uploadFormOptions =
 		{
-			type: 'post',
 			dataType: 'html',
-			clearForm: true,
-			success: showResponse
+			success: showFileSaved
+		},
+		descriptionFormOptions =
+		{
+			dataType: 'html',
+			success: showDescriptionSaved
 		};
-
-	$("form").ajaxForm(formOptions);
+	$("#file_form").ajaxForm(uploadFormOptions);
+	$("#description_form").ajaxForm(descriptionFormOptions);
 
 	// Set up socket for receiving progress events
 	var socket = io.connect('http://localhost:8001');
@@ -16,7 +19,7 @@ $(document).ready(function() {
 	// Add the socket's session id onto the form so we can parse it out
 	// server side
 	socket.on("connect", function() {
-		$("form").attr("action", "/upload?sid=" + socket.socket.sessionid);
+		$("#file_form").attr("action", "/upload?sid=" + socket.socket.sessionid);
 	});
 
 	// Update the status when receiving progress updates
@@ -28,7 +31,7 @@ $(document).ready(function() {
 	// Submit form when images is selected, as long as the user selected a file
 	$("input:file").change(function() {
 		if ($(this).val() != "") {
-			$("form").submit();
+			$("#file_form").submit();
 			$("#file_link").text("");
 		} else {
 			$("#status").hide();
@@ -36,8 +39,13 @@ $(document).ready(function() {
 		}
 	});
 
-	// Show link to completed file upload after form is finished submitting
-	function showResponse(responseText, statusText, xhr, $form) {
+	// Show link to completed file upload after file is finished uploading
+	function showFileSaved(responseText, statusText, xhr, $form) {
 		$("#file_link").attr("href", '/uploads/' + responseText).text("View file here").show();
+	}
+
+	// Show the user that their description was posted successfully
+	function showDescriptionSaved(responseText, statusText, xhr, $form) {
+		$("#description_form .success").show();
 	}
 });

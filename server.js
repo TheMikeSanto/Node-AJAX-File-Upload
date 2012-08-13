@@ -66,16 +66,21 @@ var server = http.createServer(function (req, res) {
 		}
 	}
 
+	// Handle description POSTS
+	if (req.url === "/description") {
+		if (req.method.toLowerCase() == 'post') {
+			res.writeHead(200, {"Content-Type": "text/html"});
+			res.end("success");
+		}
+	}
+
 	// Handlers for loading static content
 	if (req.url === "/client.js") {
-		fs.readFile('./assets/client.js', function (err, data) {
-			if (err) {
-				throw err;
-			} else {
-				res.writeHead(200, {'Content-Type': 'text/javascript'});
-				res.end(data);
-			}
-		});
+		serveFile(res, "./assets/js/client.js", "text/javascript");
+	}
+
+	if (req.url == "/check.png") {
+		serveFile(res, "./assets/img/check.png", "image/png");
 	}
 });
 
@@ -84,4 +89,16 @@ server.listen(8001);
 
 function virtualToPhysical(path) {
 	return __dirname + path;
+}
+
+function serveFile(res, path, contentType) {
+	fs.readFile(path, function (err, data) {
+		if (err) {
+			throw err;
+		} else {
+			console.log("serving static file " + path);
+			res.writeHead(200, {'Content-Type': contentType});
+			res.end(data);
+		}
+	});
 }
