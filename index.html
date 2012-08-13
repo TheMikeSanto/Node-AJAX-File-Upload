@@ -6,7 +6,7 @@
 		<h1>&#220;pload</h1>
 		<form enctype="multipart/form-data" action="/upload" method="post">
 			<input type="file" name="upload" multiple="multiple"><br>
-			<div style="height: 15px; width:100%;">
+			<div style="height: 15px; width:100%;" id="upload_stats">
 				<span id="status" style="display: none;">
 					<strong>Status:</strong>
 					<span id="percentage"></span>
@@ -22,7 +22,15 @@
 			<script src="http://malsup.github.com/jquery.form.js"></script> 
 			<script type="text/javascript">
 				$(document).ready(function() {
-					$("form").ajaxForm();
+					var formOptions =
+						{
+							type: 'post',
+							dataType: 'html',
+							clearForm: true,
+							success: showResponse
+						};
+
+					$("form").ajaxForm(formOptions);
 					var progress_socket = io.connect('http://localhost:8000');
 
 					progress_socket.on("connect", function() {
@@ -38,6 +46,10 @@
 					$("input:file").change(function() {
 						$("form").submit();
 					});
+
+					function showResponse(responseText, statusText, xhr, $form) {
+						$("#upload_stats").append("<a href='/uploads/" + responseText + "'>View file here</a>");
+					}
 				});
 			</script>
 		</footer>

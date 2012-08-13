@@ -11,16 +11,24 @@ var server = http.createServer(function (req, res) {
     console.log("[200] " + req.method + " to " + req.url);
     res.writeHead(200, "OK", {'Content-Type': 'text/html'});
     fs.readFile('./index.html', function(err, html) {
-    	res.end(html);
+    	if (err) {
+    		throw err;
+    	} else { 
+    		res.end(html);
+  		}
     });
   }
 
 	if (req.url.split("/")[1] == "uploads") {
 		console.log("requesting file " + virtualToPhysical(req.url));
-		var file = fs.readFile(virtualToPhysical(req.url));
-		
-		res.writeHead(200, { 'Content-Type': mime.lookup(req.url) });
-		res.end(file, 'binary');
+		var file = fs.readFile(virtualToPhysical(req.url), function (err, data) {
+			if (err) {
+				throw err;
+			} else {
+				res.writeHead(200, { 'Content-Type': mime.lookup(req.url) });
+				res.end(data, 'binary');
+			}
+		});
 	}
 
 	if (req.url.split("?")[0] == "/upload") {
@@ -41,8 +49,11 @@ var server = http.createServer(function (req, res) {
 				file_name = escape(files.upload.name);
 
 				fs.writeFile(virtualToPhysical("/uploads/" + file_name), files.upload, 'utf8', function (err) {
-					if (err) throw err;
-					console.log(file_name);
+					if (err) {
+						throw err;
+					} else
+						res.writeHead(200, {'Content-Type': 'text/javascript'});
+						res.end(file_name);
 				})
 			});
 		}
@@ -51,14 +62,6 @@ var server = http.createServer(function (req, res) {
 
 var socket = io.listen(server);
 server.listen(8000);
-
-socket.sockets.on("connection", function (socket) {
-	socket.emit("connect", {message: "you've been connected"});
-})
-
-socket.sockets.on("disconnect", function (socket) {
-	console.log(socket.id + " disconnected.");
-});
 
 function virtualToPhysical(path) {
 	return __dirname + path;
