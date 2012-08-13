@@ -1,9 +1,9 @@
-var http				= require('http'),
-		formidable	= require('formidable'),
-		fs					= require('fs'), 
-		io					= require('socket.io'),
-		mime				= require('mime'),
-		forms			= {};
+var http = require('http'),
+formidable = require('formidable'),
+fs = require('fs'),
+io = require('socket.io'),
+mime = require('mime'),
+forms = {};
 
 var server = http.createServer(function (req, res) {
 	// Serve up the main page containing the form
@@ -17,9 +17,9 @@ var server = http.createServer(function (req, res) {
 		if (req.method.toLowerCase() === 'post') {
 			// Get the socket id out of the posted url
 			// and create a new form object for it
-			socket_id					= req.url.split("sid=")[1];
-			forms[socket_id]	= new formidable.IncomingForm();
-			form							= forms[socket_id];
+			socket_id = req.url.split("sid=")[1];
+			forms[socket_id] = new formidable.IncomingForm();
+			form = forms[socket_id];
 
 			// When form progress event fires, send the current progress
 			// over the socket
@@ -51,7 +51,7 @@ var server = http.createServer(function (req, res) {
 
 	// Handle description POSTs
 	if (req.url === "/description") {
-		if (req.method.toLowerCase() == 'post') {
+		if (req.method.toLowerCase() === 'post') {
 			res.writeHead(200, {"Content-Type": "text/html"});
 			res.end("success");
 		} else {
@@ -60,7 +60,7 @@ var server = http.createServer(function (req, res) {
 	}
 
 	// Serve up the requested file to the user after upload
-	if (req.url.split("/")[1] == "uploads") {
+	if (req.url.split("/")[1] === "uploads") {
 		console.log("requesting file " + virtualToPhysical(req.url));
 		serveFile(res, virtualToPhysical(req.url), mime.lookup(req.url));
 	}
@@ -69,10 +69,10 @@ var server = http.createServer(function (req, res) {
 	if (req.url === "/client.js") {
 		serveFile(res, "./assets/js/client.js", "text/javascript");
 	}
-	if (req.url == "/check.png") {
+	if (req.url === "/check.png") {
 		serveFile(res, "./assets/img/check.png", "image/png");
 	}
-	if (req.url == "/jquery.form.js") {
+	if (req.url === "/jquery.form.js") {
 		serveFile(res, "./assets/js/jquery.form.js", "text/javascript");
 	}
 	if (req.url === "/style.css") {
