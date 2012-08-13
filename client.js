@@ -1,4 +1,5 @@
 $(document).ready(function() {
+	// Set up jquery.form on our form
 	var formOptions =
 		{
 			type: 'post',
@@ -35,6 +36,7 @@ $(document).ready(function() {
 		}
 	});
 
+	// Show link to completed file upload after form is finished submitting
 	function showResponse(responseText, statusText, xhr, $form) {
 		$("#file_link").attr("href", '/uploads/' + responseText).text("View file here").show();
 	}

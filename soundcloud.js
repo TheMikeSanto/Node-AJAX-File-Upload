@@ -7,7 +7,7 @@ var http 				= require('http'),
 
 var server = http.createServer(function (req, res) {
 	// Serve up the main page containing the form
-	if (req.url == "/") {
+	if (req.url === "/") {
     res.writeHead(200, "OK", {'Content-Type': 'text/html'});
     fs.readFile('./index.html', function(err, html) {
     	if (err) {
@@ -32,19 +32,22 @@ var server = http.createServer(function (req, res) {
 	}
 
 	// Handle file uploads
-	if (req.url.split("?")[0] == "/upload") {
+	if (req.url.split("?")[0] === "/upload") {
 		if (req.method.toLowerCase() === 'post') {
 			socket_id 				= req.url.split("sid=")[1];
 			forms[socket_id] 	= new formidable.IncomingForm();
 			form 							= forms[socket_id];
 
-			form.addListener('progress', (function(socket_id) {
+			// When form progress event fires, send the current progress
+			// over the socket
+			form.addListener('progress', (function (socket_id) {
 				return function (bytesReceived, bytesExpected) {
    				progress = (bytesReceived / bytesExpected * 100).toFixed(0);
 					socket.sockets.socket(socket_id).send(progress);
 				};
 			})(socket_id));
 
+			// Parse form and return file name in response
 			form.parse(req, function (err, fields, files) {
 				file_name = escape(files.upload.name);
 
@@ -62,7 +65,8 @@ var server = http.createServer(function (req, res) {
 		}
 	}
 
-	if (req.url == "/client.js") {
+	// Handlers for loading static content
+	if (req.url === "/client.js") {
 		fs.readFile('./client.js', function (err, data) {
 			if (err) {
 				throw err;
