@@ -78,13 +78,14 @@ var server = http.createServer(function (req, res) {
 	if (req.url === "/client.js") {
 		serveFile(res, "./assets/js/client.js", "text/javascript");
 	}
-
 	if (req.url == "/check.png") {
 		serveFile(res, "./assets/img/check.png", "image/png");
 	}
-
 	if (req.url == "/jquery.form.js") {
 		serveFile(res, "./assets/js/jquery.form.js", "text/javascript");
+	}
+	if (req.url === "/style.css") {
+		serveFile(res, "./assets/css/style.css", "text/css");
 	}
 });
 

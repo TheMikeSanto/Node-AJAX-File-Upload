@@ -1,24 +1,31 @@
 <html>
 	<head>
 		<title>&#220;pload</title>
+		<link rel="stylesheet" type="text/css" href="/style.css" />
 	</head>
 	<body>
-		<h1>&#220;pload</h1>
-		<form enctype="multipart/form-data" action="/upload" method="post" id="file_form">
-			<input type="file" name="upload" multiple="multiple"><br>
-			<div style="height: 15px; width:100%;" id="upload_stats">
-				<span id="status" style="display: none;">
-					<strong>Status:</strong>
-					<span id="percentage"></span>
-				</span>
-				<a id="file_link"></a>
-			</div>
-		</form>
+		<div id="content">
+			<h1>&#220;pload</h1>
+			<form enctype="multipart/form-data" action="/upload" method="post" id="file_form">
+				<input type="file" name="upload" multiple="multiple"><br>
+				<div style="height: 15px; width:100%;" id="upload_stats">
+					<span id="status" style="display: none;">
+						<strong>Status:</strong>
+						<span id="percentage"></span>
+					</span>
+					<a id="file_link"></a>
+				</div>
+			</form>
 
-		<form id="description_form" action="/description" method="post">
-			<textarea name="description" rows="4"></textarea><br />
-			<input type="submit" value="Save" /><img src="/check.png" style="display: none;" class="success"/>
-		</form>
+			<form id="description_form" action="/description" method="post">
+				<textarea name="description" rows="4" placeholder="Type description here"></textarea><br />
+				<input type="submit" value="Save" />
+				<span class="success" style="display: none;">
+					<img src="/check.png" />
+					Description saved!
+				</span>
+			</form>
+		</div>
 
 		<footer>
 			<script src="/socket.io/socket.io.js"></script>
