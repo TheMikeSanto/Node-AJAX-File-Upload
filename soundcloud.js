@@ -58,6 +58,17 @@ var server = http.createServer(function (req, res) {
 			});
 		}
 	}
+
+	if (req.url == "/client.js") {
+		fs.readFile('./client.js', function (err, data) {
+			if (err) {
+				throw err;
+			} else {
+				res.writeHead(200, {'Content-Type': 'text/javascript'});
+				res.end(data);
+			}
+		});
+	}
 });
 
 var socket = io.listen(server);
