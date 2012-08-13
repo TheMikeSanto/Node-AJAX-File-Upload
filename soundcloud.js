@@ -3,12 +3,11 @@ var http 				= require('http'),
 		fs 					= require('fs'), 
 		io 					= require('socket.io'),
 		mime				= require('mime'),
-		forms 			= {},
-		current_client = "";
+		forms 			= {};
 
 var server = http.createServer(function (req, res) {
+	// Serve up the main page containing the form
 	if (req.url == "/") {
-    console.log("[200] " + req.method + " to " + req.url);
     res.writeHead(200, "OK", {'Content-Type': 'text/html'});
     fs.readFile('./index.html', function(err, html) {
     	if (err) {
@@ -19,6 +18,7 @@ var server = http.createServer(function (req, res) {
     });
   }
 
+  // Serve up the requested file to the user
 	if (req.url.split("/")[1] == "uploads") {
 		console.log("requesting file " + virtualToPhysical(req.url));
 		var file = fs.readFile(virtualToPhysical(req.url), function (err, data) {
@@ -26,17 +26,17 @@ var server = http.createServer(function (req, res) {
 				throw err;
 			} else {
 				res.writeHead(200, { 'Content-Type': mime.lookup(req.url) });
-				res.end(data, 'binary');
+				res.end(data);
 			}
 		});
 	}
 
+	// Handle file uploads
 	if (req.url.split("?")[0] == "/upload") {
-		console.log("hit upload");
 		if (req.method.toLowerCase() === 'post') {
-			socket_id = req.url.split("sid=")[1];
-			forms[socket_id] = new formidable.IncomingForm();
-			form = forms[socket_id];
+			socket_id 				= req.url.split("sid=")[1];
+			forms[socket_id] 	= new formidable.IncomingForm();
+			form 							= forms[socket_id];
 
 			form.addListener('progress', (function(socket_id) {
 				return function (bytesReceived, bytesExpected) {
@@ -56,6 +56,9 @@ var server = http.createServer(function (req, res) {
 						res.end(file_name);
 				})
 			});
+		} else {
+			res.writeHead(405, "Method Not Allowed");
+			res.end();
 		}
 	}
 

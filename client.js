@@ -29,10 +29,13 @@ $(document).ready(function() {
 		if ($(this).val() != "") {
 			$("form").submit();
 			$("#file_link").text("");
+		} else {
+			$("#status").hide();
+			$("#file_link").hide();
 		}
 	});
 
 	function showResponse(responseText, statusText, xhr, $form) {
-		$("#file_link").attr("href", '/uploads/' + responseText).text("View file here");
+		$("#file_link").attr("href", '/uploads/' + responseText).text("View file here").show();
 	}
 });
