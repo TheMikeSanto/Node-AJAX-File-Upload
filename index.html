@@ -11,6 +11,7 @@
 					<strong>Status:</strong>
 					<span id="percentage"></span>
 				</span>
+				<a id="file_link"></a>
 			</div>
 			<textarea name="description" rows="4"></textarea><br />
 			<input type="submit" />
@@ -31,24 +32,32 @@
 						};
 
 					$("form").ajaxForm(formOptions);
-					var progress_socket = io.connect('http://localhost:8000');
 
-					progress_socket.on("connect", function() {
-						console.log("connected to server");
-						$("form").attr("action", "/upload?sid=" + progress_socket.socket.sessionid);
+					// Set up socket for receiving progress events
+					var socket = io.connect('http://localhost:8000');
+
+					// Add the socket's session id onto the form so we can parse it out
+					// server side
+					socket.on("connect", function() {
+						$("form").attr("action", "/upload?sid=" + socket.socket.sessionid);
 					});
 
-					progress_socket.on('message', function(data) {
+					// Update the status when receiving progress updates
+					socket.on('message', function(data) {
 						$("#status").show();
 						$("#percentage").text(data + "%");
 					});
 
+					// Submit form when images is selected, as long as the user selected a file
 					$("input:file").change(function() {
-						$("form").submit();
+						if ($(this).val() != "") {
+							$("form").submit();
+							$("#file_link").text("");
+						}
 					});
 
 					function showResponse(responseText, statusText, xhr, $form) {
-						$("#upload_stats").append("<a href='/uploads/" + responseText + "'>View file here</a>");
+						$("#file_link").attr("href", '/uploads/' + responseText).text("View file here");
 					}
 				});
 			</script>

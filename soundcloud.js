@@ -52,7 +52,7 @@ var server = http.createServer(function (req, res) {
 					if (err) {
 						throw err;
 					} else
-						res.writeHead(200, {'Content-Type': 'text/javascript'});
+						res.writeHead(200, {'Content-Type': 'text/html'});
 						res.end(file_name);
 				})
 			});
