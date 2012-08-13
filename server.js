@@ -21,14 +21,7 @@ var server = http.createServer(function (req, res) {
   // Serve up the requested file to the user
 	if (req.url.split("/")[1] == "uploads") {
 		console.log("requesting file " + virtualToPhysical(req.url));
-		var file = fs.readFile(virtualToPhysical(req.url), function (err, data) {
-			if (err) {
-				throw err;
-			} else {
-				res.writeHead(200, { 'Content-Type': mime.lookup(req.url) });
-				res.end(data);
-			}
-		});
+		serveFile(res, virtualToPhysical(req.url), mime.lookup(req.url));
 	}
 
 	// Handle file uploads
