@@ -14,7 +14,7 @@ $(document).ready(function() {
 	$("#description_form").ajaxForm(descriptionFormOptions);
 
 	// Set up socket for receiving progress events
-	var socket = io.connect('http://ec2-23-23-18-45.compute-1.amazonaws.com');
+	var socket = io.connect('http://' + document.domain);
 
 	// Add the socket's session id onto the form so we can parse it out
 	// server side
