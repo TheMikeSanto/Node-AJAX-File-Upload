@@ -11,7 +11,7 @@ $(document).ready(function() {
 	$("form").ajaxForm(formOptions);
 
 	// Set up socket for receiving progress events
-	var socket = io.connect('http://localhost:8000');
+	var socket = io.connect('http://localhost:8001');
 
 	// Add the socket's session id onto the form so we can parse it out
 	// server side

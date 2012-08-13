@@ -9,7 +9,7 @@ var server = http.createServer(function (req, res) {
 	// Serve up the main page containing the form
 	if (req.url === "/") {
     res.writeHead(200, "OK", {'Content-Type': 'text/html'});
-    fs.readFile('./index.html', function(err, html) {
+    fs.readFile('./assets/index.html', function(err, html) {
     	if (err) {
     		throw err;
     	} else { 
@@ -51,13 +51,14 @@ var server = http.createServer(function (req, res) {
 			form.parse(req, function (err, fields, files) {
 				file_name = escape(files.upload.name);
 
-				fs.writeFile(virtualToPhysical("/uploads/" + file_name), files.upload, 'utf8', function (err) {
+				fs.rename(files.upload.path, virtualToPhysical("/uploads/" + file_name), function (err) {
 					if (err) {
 						throw err;
-					} else
+					} else {
 						res.writeHead(200, {'Content-Type': 'text/html'});
 						res.end(file_name);
-				})
+					}
+				});
 			});
 		} else {
 			res.writeHead(405, "Method Not Allowed");
@@ -67,7 +68,7 @@ var server = http.createServer(function (req, res) {
 
 	// Handlers for loading static content
 	if (req.url === "/client.js") {
-		fs.readFile('./client.js', function (err, data) {
+		fs.readFile('./assets/client.js', function (err, data) {
 			if (err) {
 				throw err;
 			} else {
@@ -79,7 +80,7 @@ var server = http.createServer(function (req, res) {
 });
 
 var socket = io.listen(server);
-server.listen(8000);
+server.listen(8001);
 
 function virtualToPhysical(path) {
 	return __dirname + path;
