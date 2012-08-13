@@ -9,7 +9,7 @@ var server = http.createServer(function (req, res) {
 	// Serve up the main page containing the form
 	if (req.url === "/") {
     res.writeHead(200, "OK", {'Content-Type': 'text/html'});
-    fs.readFile('./assets/index.html', function(err, html) {
+    fs.readFile('./index.html', function(err, html) {
     	if (err) {
     		throw err;
     	} else { 
