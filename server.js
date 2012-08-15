@@ -1,9 +1,9 @@
-var http = require('http'),
-formidable = require('formidable'),
-fs = require('fs'),
-io = require('socket.io'),
-mime = require('mime'),
-forms = {};
+var http        = require('http'),
+    formidable  = require('formidable'),
+    fs          = require('fs'),
+    io          = require('socket.io'),
+    mime        = require('mime'),
+    forms       = {};
 
 var server = http.createServer(function (req, res) {
 	// Serve up the main page containing the form
