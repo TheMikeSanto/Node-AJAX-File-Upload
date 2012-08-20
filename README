@@ -1,3 +1,1 @@
-This is my first real venture into node.js and web sockets, so be gentle :).
-
-A demo of this code can be found running at http://ec2-23-23-18-45.compute-1.amazonaws.com/
+Multipart form uploader built on node.js. Works in all browsers, including IE 7+.
