@@ -24,17 +24,17 @@ var server = http.createServer(function (req, res) {
 			// When form progress event fires, send the current progress
 			// over the socket
 			form.addListener('progress', (function (socket_id) {
-				return function (bytesReceived, bytesExpected) {
-					progress = (bytesReceived / bytesExpected * 100).toFixed(0);
-					socket.sockets.socket(socket_id).send(progress);
-				};
+			return function (bytesReceived, bytesExpected) {
+				progress = (bytesReceived / bytesExpected * 100).toFixed(0);
+				socket.sockets.socket(socket_id).send(progress);
+			};
 			})(socket_id));
 
 			// Parse form and return file name in response
 			form.parse(req, function (err, fields, files) {
 				file_name = escape(files.upload.name);
 
-			fs.rename(files.upload.path, virtualToPhysical("/uploads/" + file_name), function (err) {
+				fs.rename(files.upload.path, virtualToPhysical("/uploads/" + file_name), function (err) {
 					if (err) {
 						throw err;
 					} else {
