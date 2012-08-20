@@ -9,7 +9,6 @@ var server = http.createServer(function (req, res) {
 	// Serve up the main page containing the form
 	if (req.url === "/") {
 		serveFile(res, "./index.html", 'text/html');
-		res.writeHead(200, "OK", {'Content-Type': 'text/html'});
 	}
 
 	// Handle file upload POSTs
